@@ -1,0 +1,405 @@
+#+TITLE: My Emacs Configuration
+#+AUTHOR: Aagaman Luitel
+# https://raw.githubusercontent.com/angrybacon/dotemacs/master/dotemacs.org
+# https://systemcrafters.net/emacs-from-scratch/the-best-default-settings/
+
+* Defaults
+#+begin_src emacs-lisp
+  (setq-default
+   ad-redefinition-action 'accept         ; Silence warnings for redefinition
+   auto-save-list-file-prefix nil         ; Prevent tracking for auto-saves
+   create-lockfiles nil                   ; Locks are more nuisance than blessing
+   cursor-in-non-selected-windows nil     ; Hide the cursor in inactive windows
+   ;;cursor-type '(hbar . 2)              ; Underline-shaped cursor
+   custom-unlispify-menu-entries nil      ; Prefer kebab-case for titles
+   custom-unlispify-tag-names nil         ; Prefer kebab-case for symbols
+   delete-by-moving-to-trash t            ; Delete files to trash
+   fill-column 80                         ; Set width for automatic line breaks
+   gc-cons-threshold (* 8 1024 1024)      ; We're not using Game Boys anymore
+   help-window-select t                   ; Focus new help windows when opened
+   inhibit-startup-screen t               ; Disable start-up screen
+   initial-scratch-message ""             ; Empty the initial *scratch* buffer
+   initial-major-mode #'org-mode          ; Prefer `org-mode' for *scratch*
+   mouse-yank-at-point t                  ; Yank at point rather than pointer
+   native-comp-async-report-warnings-errors 'silent ; Skip error buffers
+   read-process-output-max (* 1024 1024)  ; Increase read size for data chunks
+   recenter-positions '(5 bottom)         ; Set re-centering positions
+   scroll-conservatively 101              ; Avoid recentering when scrolling far
+   scroll-margin 1                        ; Add a margin when scrolling vertically
+   select-enable-clipboard t              ; Merge system's and Emacs' clipboard
+   sentence-end-double-space nil          ; Use a single space after dots
+   show-help-function nil                 ; Disable help text everywhere
+   tab-always-indent 'complete            ; Indent first then try completions
+   indent-tabs-mode nil                   ; Stop using tabs to indent
+   tab-width 4                            ; Smaller width for tab characters
+   uniquify-buffer-name-style 'forward    ; Uniquify buffer names
+   use-short-answers t                    ; Replace yes/no prompts with y/n
+   vc-follow-symlinks t                   ; Never prompt when visiting symlinks
+   window-combination-resize t            ; Resize windows proportionally
+   use-package-always-ensure t            ; Ensure t
+   global-auto-revert-non-file-buffers t  ; Accept changes
+   x-stretch-cursor t)                    ; Stretch cursor to the glyph width
+  (blink-cursor-mode 0)                   ; Prefer a still cursor
+  (delete-selection-mode 1)               ; Replace region when inserting text
+  (global-subword-mode 1)                 ; Iterate through CamelCase words
+  (mouse-avoidance-mode 'exile)           ; Avoid collision of mouse with point
+  (put 'downcase-region 'disabled nil)    ; Enable `downcase-region'
+  (put 'scroll-left 'disabled nil)        ; Enable `scroll-left'
+  (put 'upcase-region 'disabled nil)      ; Enable `upcase-region'
+  (set-default-coding-systems 'utf-8)     ; Default to utf-8 encoding
+  (global-auto-revert-mode 1)
+  (save-place-mode 1)
+  (recentf-mode 1)
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+
+  (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+  (menu-bar--display-line-numbers-mode-relative)
+
+  (setq auto-save-default nil
+        make-backup-files nil)
+
+  (setq custom-file (locate-user-emacs-file "custom-vars.el"))
+  (load custom-file 'noerror 'nomessage)
+
+  (defvaralias 'c-basic-offset 'tab-width)
+
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+#+end_src
+* Melpa
+#+begin_src emacs-lisp
+  (require 'package)
+  (add-to-list 'package-archives
+               '("melpa" . "https://melpa.org/packages/") t)
+#+end_src
+* Font
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(font . "iosevka_spw-13" ))
+  (set-face-attribute 'default nil :font "iosevka_spw-13" )
+  (set-frame-font "iosevka_spw-13" nil t)
+#+end_src
+* Dired
+#+begin_src emacs-lisp
+  (setf dired-kill-when-opening-new-dired-buffer t)
+#+end_src
+* Evil
+#+begin_src emacs-lisp
+  (use-package evil
+    :ensure t
+    :init
+    (progn
+      (setq evil-want-keybinding nil)))
+
+  (use-package evil-collection)
+  (evil-collection-init '(dired elfeed magit org))
+
+  (evil-mode)
+  (evil-set-undo-system 'undo-redo)
+#+end_src
+* UI
+#+begin_src emacs-lisp
+  (use-package doom-themes
+    :ensure t)
+  (use-package all-the-icons)
+  (use-package doom-modeline
+    :init (doom-modeline-mode 1))
+
+  (use-package nyan-mode)
+  (setq nyan-animate-nyancat t)
+  (setq nyan-wavy-trail t)
+  (nyan-mode)
+
+  (load-theme 'modus-operandi-deuteranopia t)
+
+  (set-frame-parameter nil 'alpha-background 90)
+  (add-to-list 'default-frame-alist '(alpha-background . 90))
+
+  (global-hl-line-mode t)
+#+end_src
+* Indent
+#+begin_src emacs-lisp
+  (use-package aggressive-indent)
+  (use-package smartparens)
+  (add-hook 'prog-mode-hook #'smartparens-global-mode)
+  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+  (add-hook 'css-mode-hook #'aggressive-indent-mode)
+  (add-hook 'html-mode-hook #'aggressive-indent-mode)
+
+  ;; https://stackoverflow.com/a/35469843
+  (with-eval-after-load 'smartparens
+    (sp-with-modes
+        '(c++-mode objc-mode c-mode java-mode rust-mode tuareg-mode go-mode)
+      (sp-local-pair "{" nil :post-handlers '(:add ("||\n[i]" "RET")))))
+
+  ;; disable mouse highlight
+  ;; https://stackoverflow.com/questions/23789962/how-to-disable-emacs-highlighting-whitespace-in-parenthesis
+  (setq sp-highlight-pair-overlay nil)
+#+end_src
+* Packages
+#+begin_src emacs-lisp
+  (use-package magit)
+  (use-package projectile)
+  (use-package consult)
+  (use-package devdocs)
+  (use-package markdown-mode)
+  (use-package which-key
+    :ensure t)
+  (which-key-mode)
+  (use-package editorconfig
+    :config
+    (editorconfig-mode 1))
+#+end_src
+* Org Mode
+#+begin_src emacs-lisp
+  (use-package org-modern)
+  (add-hook 'org-mode-hook #'org-indent-mode)
+  (add-hook 'org-mode-hook #'org-modern-mode)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages '((C . t)
+                               (js . t)
+                               (python . t)
+                               (shell . t)))
+
+  (require 'org-tempo)
+
+  (setq org-image-actual-width 400)
+
+  (add-hook 'org-mode-hook #'org-toggle-inline-images)
+
+  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("cpp" . "src C++"))
+  (add-to-list 'org-structure-template-alist '("dennis" . "src C"))
+#+end_src
+* Completion
+#+begin_src emacs-lisp
+  (use-package corfu-prescient)
+  (corfu-prescient-mode 1)
+  (use-package vertico
+    :init
+    (vertico-mode))
+
+  ;;(use-package savehist
+  ;;  :ensure t)
+  (savehist-mode 1)
+
+  (use-package marginalia
+    :bind (("M-A" . marginalia-cycle)
+           :map minibuffer-local-map
+           ("M-A" . marginalia-cycle))
+    :init
+    (marginalia-mode))
+
+  (use-package corfu
+    :ensure t
+    :custom
+    (corfu-cycle t)
+    (corfu-auto t)
+    (corfu-echo-documentation t)
+    (corfu-count 10)
+    (corfu-auto-delay 0)
+    (corfu-auto-prefix 1)
+    :hook ((prog-mode . corfu-mode)
+           (shell-mode . corfu-mode)
+           (eshell-mode . corfu-mode))
+    :bind
+    (:map corfu-map
+          ("C-n" . corfu-scroll-down)
+          ("C-p" . corfu-scroll-up)
+          ("<escape>" . corfu-quit)
+          ("<return>" . corfu-insert)
+          ("M-d" . corfu-show-documentation)
+          ("M-l" . corfu-show-location))
+    :init
+    (global-corfu-mode))
+
+  ;; Option 1: Specify explicitly to use Orderless for Eglot
+  (setq completion-category-overrides '((eglot (styles orderless))))
+
+  ;; Option 2: Undo the Eglot modification of completion-category-defaults
+  (with-eval-after-load 'eglot
+    (setq completion-category-defaults nil))
+
+
+  (use-package orderless
+    :init
+    (setq completion-styles '(orderless partial-completion basic)
+          completion-category-defaults nil
+          completion-category-overrides nil))
+
+  ;;(load "~/.emacs.d/elpa/corfu-0.34/corfu-popupinfo.el")
+  ;;(corfu-popupinfo-mode)
+#+end_src
+* Programming
+** Eglot
+#+begin_src emacs-lisp
+  (use-package eglot
+    :ensure t)
+
+  ;; Eglot customization can be done through
+  ;; C-h v 'eglot-ignored-server-capabilities'
+  (add-hook 'c-mode-hook 'eglot-ensure)
+  (add-hook 'c++-mode-hook 'eglot-ensure)
+  (add-hook 'go-mode-hook 'eglot-ensure)
+  (add-hook 'rust-mode-hook 'eglot-ensure)
+  (add-hook 'tuareg-mode-hook 'eglot-ensure)
+
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '((c-mode c++-mode) . ("clangd"
+                                        "--background-index"
+                                        "--clang-tidy"
+                                        "--cross-file-rename"
+                                        "--completion-style=detailed"
+                                        "--header-insertion=never"
+                                        "--header-insertion-decorators=0"
+                                        ))))
+
+  (use-package flycheck)
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+#+end_src
+
+** Tree Sitter
+#+begin_src emacs-lisp
+  ;; TODO https://git.savannah.gnu.org/cgit/emacs.git/tree/admin/notes/tree-sitter/starter-guide?h=feature/tree-sitter
+  (use-package tree-sitter-langs
+    :ensure t)
+
+  (use-package tree-sitter
+    :ensure t
+    :config
+    (require 'tree-sitter-langs)
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
+** Web Mode
+#+begin_src emacs-lisp
+  (use-package web-mode)
+  (require 'web-mode)
+  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+#+end_src
+** Rust
+#+begin_src emacs-lisp
+  (use-package rust-mode)
+  (add-hook 'rust-mode-hook
+            (lambda () (setq indent-tabs-mode nil)))
+  (setq rust-format-on-save t)
+
+  (use-package flycheck-rust)
+  (with-eval-after-load 'rust-mode
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+#+end_src
+** Go
+#+begin_src emacs-lisp
+  (use-package go-mode)
+  (add-hook 'before-save-hook 'gofmt-before-save)
+#+end_src
+** Ocaml
+#+begin_src emacs-lisp
+  (use-package tuareg)
+  (add-hook 'tuareg-mode-hook
+            (lambda() (setq tuareg-mode-name "🐫")))
+#+end_src
+** Scheme
+#+begin_src emacs-lisp
+  (use-package merlin)
+  (use-package geiser-mit)
+#+end_src
+* Elfeed
+#+begin_src emacs-lisp
+  (use-package elfeed)
+  (setq elfeed-feeds
+        '("http://nullprogram.com/feed/"
+          "https://scientiac.tilde.team/atom.xml"
+          "https://danluu.com/atom/index.xml"
+          "https://luitelaagaman.com.np/atom.xml"
+          "https://drewdevault.com/blog/index.xml"
+          "https://briancallahan.net/blog/feed.xml"
+          "https://shafik.github.io/feed.xml"
+          "https://zserge.com/rss.xml"
+          "https://0xax.github.io/index.xml"
+          "https://brennan.io/blog/rss.xml"
+          "https://jvns.ca/atom.xml"
+          "https://0pointer.net/blog/index.rss20"
+          "https://austinmorlan.com/index.xml"
+          "https://fasterthanli.me/index.xml"
+          "https://www.nayuki.io/rss20.xml"
+          "https://austinhenley.com/blog/feed.rss"
+          ))
+#+end_src
+* Keybind
+#+begin_src emacs-lisp
+  (use-package general
+    :ensure t)
+
+  (general-unbind
+    "C-l")
+
+  (general-unbind 'insert
+    "C-n"
+    "C-l"
+    "C-p"
+    "C-x C-n")
+
+  (general-unbind 'normal
+    "C-x C-n")
+
+  (general-define-key
+   :states '(insert visual)
+   "C-l" 'evil-normal-state
+   "C-x C-n" 'consult-buffer)
+
+  (defun open_foot()
+    "Opens foot terminal in current buffer with its own process."
+    (interactive)
+    (start-process-shell-command "foot terminal" nil "foot"))
+
+  (general-define-key
+   "C-c C-t" 'open_foot
+   "C-x C-n" 'consult-buffer)
+
+  (general-define-key
+   :keymaps 'corfu-map
+   "C-n" 'corfu-next
+   "C-l" 'corfu-quit
+   "C-p" 'corfu-previous)
+
+  (general-define-key
+   :keymaps 'vertico-map
+   "C-w" 'backward-kill-word
+   "C-c" 'keyboard-escape-quit)
+
+  (general-define-key
+   :keymaps 'eglot-mode-map
+   :prefix "C-x"
+   "C-n" 'consult-buffer)
+
+  (general-define-key
+   :states 'normal
+   :keymaps 'eglot-mode-map
+   "C-e" 'flymake-goto-next-error)
+
+  (general-define-key
+   :states 'normal
+   :keymaps 'eglot-mode-map
+   :prefix "C-c"
+   "C-d" 'xref-find-definitions
+   "C-r" 'xref-find-references
+   "C-e" 'consult-flymake)
+
+  (general-define-key
+   :states 'normal
+   :keymaps 'xref--xref-buffer-mode-map
+   "C-c" 'xref-goto-xref)
+#+end_src
