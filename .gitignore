@@ -11,6 +11,7 @@ eln-cache/
 /elpa/
 
 
+config.el
 assets
 auto-save-list
 eln-cache
