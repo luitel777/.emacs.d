@@ -214,14 +214,6 @@
     :init
     (global-corfu-mode))
 
-  ;; Option 1: Specify explicitly to use Orderless for Eglot
-  (setq completion-category-overrides '((eglot (styles orderless))))
-
-  ;; Option 2: Undo the Eglot modification of completion-category-defaults
-  (with-eval-after-load 'eglot
-    (setq completion-category-defaults nil))
-
-
   (use-package orderless
     :init
     (setq completion-styles '(orderless partial-completion basic)
@@ -257,6 +249,8 @@
 
   (use-package flycheck)
   (add-hook 'after-init-hook #'global-flycheck-mode)
+
+  (setq completion-category-overrides '((eglot (styles orderless))))
 #+end_src
 
 ** Tree Sitter
