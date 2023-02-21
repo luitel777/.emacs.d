@@ -176,8 +176,6 @@
 #+end_src
 * Completion
 #+begin_src emacs-lisp
-  (use-package corfu-prescient)
-  (corfu-prescient-mode 1)
   (use-package vertico
     :init
     (vertico-mode))
@@ -230,8 +228,7 @@
           completion-category-defaults nil
           completion-category-overrides nil))
 
-  ;;(load "~/.emacs.d/elpa/corfu-0.34/corfu-popupinfo.el")
-  ;;(corfu-popupinfo-mode)
+  (corfu-popupinfo-mode)
 #+end_src
 * Programming
 ** Eglot
