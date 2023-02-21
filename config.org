@@ -1,9 +1,8 @@
 #+TITLE: My Emacs Configuration
 #+AUTHOR: Aagaman Luitel
-# https://raw.githubusercontent.com/angrybacon/dotemacs/master/dotemacs.org
-# https://systemcrafters.net/emacs-from-scratch/the-best-default-settings/
-
 * Defaults
++ https://raw.githubusercontent.com/angrybacon/dotemacs/master/dotemacs.org
++ https://systemcrafters.net/emacs-from-scratch/the-best-default-settings/
 #+begin_src emacs-lisp
   (setq-default
    ad-redefinition-action 'accept         ; Silence warnings for redefinition
