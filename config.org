@@ -121,7 +121,7 @@
 #+begin_src emacs-lisp
   (use-package aggressive-indent)
   (use-package smartparens)
-  (add-hook 'prog-mode-hook #'smartparens-global-mode)
+  (add-hook 'prog-mode-hook #'smartparens-mode)
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'css-mode-hook #'aggressive-indent-mode)
   (add-hook 'html-mode-hook #'aggressive-indent-mode)
