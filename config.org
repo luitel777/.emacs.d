@@ -151,6 +151,7 @@
     (editorconfig-mode 1))
 #+end_src
 * Org Mode
++ Python: https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-python.html
 #+begin_src emacs-lisp
   (use-package org-modern)
   (add-hook 'org-mode-hook #'org-indent-mode)
@@ -252,7 +253,6 @@
 
   (setq completion-category-overrides '((eglot (styles orderless))))
 #+end_src
-
 ** Tree Sitter
 #+begin_src emacs-lisp
   ;; TODO https://git.savannah.gnu.org/cgit/emacs.git/tree/admin/notes/tree-sitter/starter-guide?h=feature/tree-sitter
