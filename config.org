@@ -52,6 +52,7 @@
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
+  (global-visual-line-mode)
 
   (add-hook 'prog-mode-hook #'display-line-numbers-mode)
   (menu-bar--display-line-numbers-mode-relative)
@@ -110,7 +111,7 @@
   (setq nyan-wavy-trail t)
   (nyan-mode)
 
-  (load-theme 'modus-operandi-deuteranopia t)
+  (load-theme 'modus-operandi t)
 
   (set-frame-parameter nil 'alpha-background 90)
   (add-to-list 'default-frame-alist '(alpha-background . 90))
@@ -125,6 +126,7 @@
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'css-mode-hook #'aggressive-indent-mode)
   (add-hook 'html-mode-hook #'aggressive-indent-mode)
+  ;;(add-hook 'org-mode-hook 'org-indent-mode)
 
   ;; https://stackoverflow.com/a/35469843
   (with-eval-after-load 'smartparens
