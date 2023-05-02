@@ -249,7 +249,7 @@
     (setq completion-styles '(orderless partial-completion basic)
           completion-category-defaults nil
           completion-category-overrides nil))
-
+  (load "~/.emacs.d/elpa/corfu-0.36/corfu-popupinfo.el")
   (corfu-popupinfo-mode)
 #+end_src
 * Programming
@@ -260,11 +260,12 @@
 
   ;; Eglot customization can be done through
   ;; C-h v 'eglot-ignored-server-capabilities'
-  (add-hook 'c-mode-hook 'eglot-ensure)
-  (add-hook 'c++-mode-hook 'eglot-ensure)
-  (add-hook 'go-mode-hook 'eglot-ensure)
-  (add-hook 'rust-mode-hook 'eglot-ensure)
-  (add-hook 'tuareg-mode-hook 'eglot-ensure)
+  ;; NOTE: Disabled eglot cuz text editing will be slow
+  ;;(add-hook 'c-mode-hook 'eglot-ensure)
+  ;;(add-hook 'c++-mode-hook 'eglot-ensure)
+  ;;(add-hook 'go-mode-hook 'eglot-ensure)
+  ;;(add-hook 'rust-mode-hook 'eglot-ensure)
+  ;;(add-hook 'tuareg-mode-hook 'eglot-ensure)
 
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
@@ -281,6 +282,7 @@
   (add-hook 'after-init-hook #'global-flycheck-mode)
 
   (setq completion-category-overrides '((eglot (styles orderless))))
+  (use-package htmlize)
 #+end_src
 ** Tree Sitter
 #+begin_src emacs-lisp
