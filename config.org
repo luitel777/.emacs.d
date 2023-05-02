@@ -156,8 +156,9 @@
 + Python: https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-python.html
 #+begin_src emacs-lisp
   (use-package org-modern)
-  (add-hook 'org-mode-hook #'org-indent-mode)
+  ;;(add-hook 'org-mode-hook #'org-indent-mode)
   (add-hook 'org-mode-hook #'org-modern-mode)
+  (setq org-export-headline-levels 5)
 
   (org-babel-do-load-languages
    'org-babel-load-languages '((C . t)
@@ -177,7 +178,33 @@
   (add-to-list 'org-structure-template-alist '("cpp" . "src C++"))
   (add-to-list 'org-structure-template-alist '("dennis" . "src C"))
 #+end_src
-* Completion
+#+begin_src emacs-lisp
+  (require 'ox-latex)
+  (add-to-list 'org-latex-classes
+               '("memoir"
+                 "\\documentclass[oneside]{memoir}
+                 \\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+                 \\usepackage{geometry}
+                 \\usepackage[]{graphicx}
+                 \\chapterstyle{madsen}
+                 \\usepackage{minted}
+                 \\usemintedstyle{lovelace}
+                 \\geometry{a4paper, left=25mm, right=20mm}"
+                 ("\\chapter{%s}" . "\\chapter*{%s}")
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  (setq org-latex-listings t)
+  (setq org-latex-listings 'minted)
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+#+end_src
+ Completion
 #+begin_src emacs-lisp
   (use-package vertico
     :init
